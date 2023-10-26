@@ -1,0 +1,40 @@
+﻿@model List<Project3_InteligentaArtificiala_.Models.GlassModel>
+<form asp-controller="NormalizedTable" asp-action="Index" method="post">
+    <button type="submit">Normalize</button>
+</form>
+
+<div style="height: 400px; overflow-y: scroll;">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>RI</th>
+                <th>Na</th>
+                <th>Mg</th>
+                <th>Al</th>
+                <th>Si</th>
+                <th>K</th>
+                <th>Ca</th>
+                <th>Ba</th>
+                <th>Fe</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var glass in Model)
+            {
+                <tr>
+                    <td>@glass.RI</td>
+                    <td>@glass.Na</td>
+                    <td>@glass.Mg</td>
+                    <td>@glass.Al</td>
+                    <td>@glass.Si</td>
+                    <td>@glass.K</td>
+                    <td>@glass.Ca</td>
+                    <td>@glass.Ba</td>
+                    <td>@glass.Fe</td>
+                    <td>@glass.Type</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

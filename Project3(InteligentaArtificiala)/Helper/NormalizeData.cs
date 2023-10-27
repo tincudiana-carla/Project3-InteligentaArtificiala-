@@ -1,5 +1,6 @@
 ﻿using Project3_InteligentaArtificiala_.Controllers;
 using Project3_InteligentaArtificiala_.Models;
+using System.Data.Entity;
 
 namespace Project3_InteligentaArtificiala_.Helper
 {
@@ -8,15 +9,47 @@ namespace Project3_InteligentaArtificiala_.Helper
         private readonly GlassContext _context;
         private readonly CalculatingMINorMaxForEachColumn _calculator;
         private readonly NormalizeContext _normalizedTable;
-        public NormalizeData(GlassContext context, CalculatingMINorMaxForEachColumn calculator, NormalizeContext normalizedTable)
+        private readonly TestingContext _testingContext;
+        private readonly TrainingContext _trainingContext;
+        private readonly SplittingTheTableInTwoParts _splittingTheTableInTwoParts;
+        public NormalizeData(GlassContext context, CalculatingMINorMaxForEachColumn calculator, NormalizeContext normalizedTable, TestingContext testingContext, TrainingContext trainingContext, SplittingTheTableInTwoParts splittingTheTableInTwoParts)
         {
             _context = context;
             _calculator = calculator;
             _normalizedTable = normalizedTable;
+            _trainingContext = trainingContext;
+            _testingContext = testingContext;
+            _splittingTheTableInTwoParts = splittingTheTableInTwoParts;
         }
+
         public void NormalizingData()
         {
+
             var existingList = _normalizedTable.NormalizeTable.ToList();
+            var normalTable = _context.GlassTable.ToList();
+            var testingList = _testingContext.TestingTable.ToList();
+            var trainingList = _trainingContext.TrainingTable2.ToList();
+
+            foreach (var existingRecord in existingList)
+            {
+                var matchingNormalRecord = normalTable.FirstOrDefault(n => n.Id == existingRecord.Id);
+
+                if (matchingNormalRecord != null)
+                {
+                    existingRecord.RI = matchingNormalRecord.RI;
+                    existingRecord.Na = matchingNormalRecord.Na;
+                    existingRecord.Mg = matchingNormalRecord.Mg;
+                    existingRecord.Al = matchingNormalRecord.Al;
+                    existingRecord.Si = matchingNormalRecord.Si;
+                    existingRecord.K = matchingNormalRecord.K;
+                    existingRecord.Ca = matchingNormalRecord.Ca;
+                    existingRecord.Ba = matchingNormalRecord.Ba;
+                    existingRecord.Fe = matchingNormalRecord.Fe;
+                    existingRecord.Type = matchingNormalRecord.Type;
+                }
+            }
+            _normalizedTable.SaveChanges();
+            _splittingTheTableInTwoParts.SplitTheTable();
 
             float leftComponentRI = _calculator.CalculateMinForRI();
             float rightComponentRI = _calculator.CalculateMaxForRI();
@@ -63,8 +96,41 @@ namespace Project3_InteligentaArtificiala_.Helper
                 glass.Ca = ((c - d) / (leftComponentCa - rightComponentCa)) * glass.Ca + (leftComponentCa * d - rightComponentCa * c) / (leftComponentCa - rightComponentCa);
                 glass.Ba = ((c - d) / (leftComponentBa - rightComponentBa)) * glass.Ba + (leftComponentBa * d - rightComponentBa * c) / (leftComponentBa - rightComponentBa);
                 glass.Fe = ((c - d) / (leftComponentFe - rightComponentFe)) * glass.Fe + (leftComponentFe * d - rightComponentFe * c) / (leftComponentFe - rightComponentFe);
-                glass.Type = (((c - d) / (leftComponentType - rightComponentType)) * glass.Type) + ((leftComponentType * d - rightComponentType * c) / (leftComponentType - rightComponentType));
+                glass.Type = (((c - d) / (leftComponentType - rightComponentType)) * glass.Type) + ((leftComponentType * d - rightComponentType * c) / (leftComponentType - rightComponentType));    
             }
+            _normalizedTable.SaveChanges();
+
+            foreach (var glassTesting in _testingContext.TestingTable)
+            {
+                glassTesting.RI = ((c - d) / (leftComponentRI - rightComponentRI)) * glassTesting.RI + (leftComponentRI * d - rightComponentRI * c) / (leftComponentRI - rightComponentRI);
+                glassTesting.Na = ((c - d) / (leftComponentNa - rightComponentNa)) * glassTesting.Na + (leftComponentNa * d - rightComponentNa * c) / (leftComponentNa - rightComponentNa);
+                glassTesting.Mg = ((c - d) / (leftComponentMg - rightComponentMg)) * glassTesting.Mg + (leftComponentMg * d - rightComponentMg * c) / (leftComponentMg - rightComponentMg);
+                glassTesting.Al = ((c - d) / (leftComponentAl - rightComponentAl)) * glassTesting.Al + (leftComponentAl * d - rightComponentAl * c) / (leftComponentAl - rightComponentAl);
+                glassTesting.Si = ((c - d) / (leftComponentSi - rightComponentSi)) * glassTesting.Si + (leftComponentSi * d - rightComponentSi * c) / (leftComponentSi - rightComponentSi);
+                glassTesting.K = ((c - d) / (leftComponentK - rightComponentK)) * glassTesting.K + (leftComponentK * d - rightComponentK * c) / (leftComponentK - rightComponentK);
+                glassTesting.Ca = ((c - d) / (leftComponentCa - rightComponentCa)) * glassTesting.Ca + (leftComponentCa * d - rightComponentCa * c) / (leftComponentCa - rightComponentCa);
+                glassTesting.Ba = ((c - d) / (leftComponentBa - rightComponentBa)) * glassTesting.Ba + (leftComponentBa * d - rightComponentBa * c) / (leftComponentBa - rightComponentBa);
+                glassTesting.Fe = ((c - d) / (leftComponentFe - rightComponentFe)) * glassTesting.Fe + (leftComponentFe * d - rightComponentFe * c) / (leftComponentFe - rightComponentFe);
+                glassTesting.Type = (((c - d) / (leftComponentType - rightComponentType)) * glassTesting.Type) + ((leftComponentType * d - rightComponentType * c) / (leftComponentType - rightComponentType));
+
+
+            }
+            _testingContext.SaveChanges();
+            foreach (var glassTTraining in _trainingContext.TrainingTable2)
+            {
+                glassTTraining.RI = ((c - d) / (leftComponentRI - rightComponentRI)) * glassTTraining.RI + (leftComponentRI * d - rightComponentRI * c) / (leftComponentRI - rightComponentRI);
+                glassTTraining.Na = ((c - d) / (leftComponentNa - rightComponentNa)) * glassTTraining.Na + (leftComponentNa * d - rightComponentNa * c) / (leftComponentNa - rightComponentNa);
+                glassTTraining.Mg = ((c - d) / (leftComponentMg - rightComponentMg)) * glassTTraining.Mg + (leftComponentMg * d - rightComponentMg * c) / (leftComponentMg - rightComponentMg);
+                glassTTraining.Al = ((c - d) / (leftComponentAl - rightComponentAl)) * glassTTraining.Al + (leftComponentAl * d - rightComponentAl * c) / (leftComponentAl - rightComponentAl);
+                glassTTraining.Si = ((c - d) / (leftComponentSi - rightComponentSi)) * glassTTraining.Si + (leftComponentSi * d - rightComponentSi * c) / (leftComponentSi - rightComponentSi);
+                glassTTraining.K = ((c - d) / (leftComponentK - rightComponentK)) * glassTTraining.K + (leftComponentK * d - rightComponentK * c) / (leftComponentK - rightComponentK);
+                glassTTraining.Ca = ((c - d) / (leftComponentCa - rightComponentCa)) * glassTTraining.Ca + (leftComponentCa * d - rightComponentCa * c) / (leftComponentCa - rightComponentCa);
+                glassTTraining.Ba = ((c - d) / (leftComponentBa - rightComponentBa)) * glassTTraining.Ba + (leftComponentBa * d - rightComponentBa * c) / (leftComponentBa - rightComponentBa);
+                glassTTraining.Fe = ((c - d) / (leftComponentFe - rightComponentFe)) * glassTTraining.Fe + (leftComponentFe * d - rightComponentFe * c) / (leftComponentFe - rightComponentFe);
+                glassTTraining.Type = (((c - d) / (leftComponentType - rightComponentType)) * glassTTraining.Type) + ((leftComponentType * d - rightComponentType * c) / (leftComponentType - rightComponentType));
+
+            }
+            _trainingContext.SaveChanges();
         }
 
 

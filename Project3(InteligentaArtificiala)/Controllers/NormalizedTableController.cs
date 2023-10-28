@@ -15,8 +15,9 @@ namespace Project3_InteligentaArtificiala_.Controllers
         private readonly TestingContext _testingContext;
         private readonly TrainingContext _trainingContext;
         private static List<LayerModel> _tempLayers = new List<LayerModel>();
+        private readonly SettingXByCalculatingGINAndActivation _settingXByCalculatingGINAndActivation;
 
-        public NormalizedTableController(GlassContext context, CalculatingMINorMaxForEachColumn calculator, NormalizeContext normalizeContext, NormalizeData normalizeData, TrainingContext trainingContext , TestingContext testingContext, SplittingTheTableInTwoParts splittingTheTableInTwoParts)
+        public NormalizedTableController(GlassContext context, CalculatingMINorMaxForEachColumn calculator, NormalizeContext normalizeContext, NormalizeData normalizeData, TrainingContext trainingContext , TestingContext testingContext, SplittingTheTableInTwoParts splittingTheTableInTwoParts, SettingXByCalculatingGINAndActivation settingXByCalculatingGINAndActivation)
         {
             _context = context;
             _calculator = calculator;
@@ -24,7 +25,8 @@ namespace Project3_InteligentaArtificiala_.Controllers
             _normalizeData = normalizeData;
             _trainingContext = trainingContext;
             _testingContext = testingContext;
-            _splittingTheTableInTwoParts = splittingTheTableInTwoParts; 
+            _splittingTheTableInTwoParts = splittingTheTableInTwoParts;
+            _settingXByCalculatingGINAndActivation = settingXByCalculatingGINAndActivation;
         }
 
         public IActionResult Index()
@@ -95,9 +97,27 @@ namespace Project3_InteligentaArtificiala_.Controllers
                     inputLayer.Neurons[6].x = firstTrainingObject.Ca;
                     inputLayer.Neurons[7].x = firstTrainingObject.Ba;
                     inputLayer.Neurons[8].x = firstTrainingObject.Fe;
+                    for (int i = 1; i < _tempLayers.Count; i++)
+                    {
+                        var currentLayer = _tempLayers[i];
+                        foreach (var neuron in currentLayer.Neurons)
+                        {
+                            neuron.x = 0;
+                            for (int j = 0; j < inputLayer.Neurons.Count; j++)
+                            {
+                                neuron.x += inputLayer.Neurons[j].x * neuron.weights[j];
+                            }
+                            neuron.x = Sigmoid(neuron.x);
+                        }
+                        inputLayer = currentLayer;
+                    }
                 }
-             
             }
+        }
+
+        private double Sigmoid(double x)
+        {
+            return 1 / (1 + Math.Exp(-x));
         }
         public IActionResult ViewNeuronalNetwork(string neuronsPerLayer)
         {
@@ -107,7 +127,7 @@ namespace Project3_InteligentaArtificiala_.Controllers
                 Layers = _tempLayers
             };
             SetInputLayerWithTrainingValues();
-
+            SetInputLayerWithTrainingValues();
             return View(viewModel);
         }
 

@@ -38,11 +38,15 @@
 <script>
     function showNeuronDetails(inputValue, weights) {
     var parsedWeights = weights.map(function(weight) {
-        return parseFloat(weight.replace(',', '.')); // Ensure decimal separator consistency
+        if (typeof weight === 'string') {
+            return parseFloat(weight.replace(',', '.')); 
+        }
+        return weight;
     });
 
     var weightsString = parsedWeights.join(', ');
     alert('Input (x): ' + inputValue + '\nWeights (w): ' + weightsString);
 }
+
 
 </script>

@@ -8,9 +8,12 @@
         public NeuronModel(int numberOfConnections)
         {
             weights = new List<double>(numberOfConnections);
+            Random rand = new Random();
+
             for (int i = 0; i < numberOfConnections; i++)
             {
-                weights.Add(0.0); 
+                double randomWeight = rand.NextDouble() * 2 - 1;
+                weights.Add(randomWeight);
             }
         }
     }

@@ -72,17 +72,16 @@
             if (!layersAdded) {
                 var numberOfLayers = parseInt(document.getElementById('numberOfLayers').value);
                 if (!isNaN(numberOfLayers) && numberOfLayers >= 2) {
-                    // Clear previous layers
+
                     document.getElementById('neuronsInputContainer').innerHTML = '';
 
-                    // Input layer with 9 neurons (fixed)
+
                     var inputField = document.createElement('div');
                     inputField.classList.add('form-group', 'neuron-input');
                     inputField.innerHTML = '<label for="neuronsForLayer0">Neurons for Layer 0 (Input):</label>' +
                         '<input type="number" class="form-control" id="neuronsForLayer0" name="neuronsPerLayer[0]" value="9" readonly />';
                     document.getElementById('neuronsInputContainer').appendChild(inputField);
 
-                    // Hidden layers with customizable number of neurons
                     for (var i = 1; i < numberOfLayers-1; i++) {
                         var layerNumber = i === numberOfLayers - 1 ? 'Output' : 'Hidden Layer ' + i;
                         var inputField = document.createElement('div');
@@ -92,7 +91,6 @@
                         document.getElementById('neuronsInputContainer').appendChild(inputField);
                     }
 
-                    // Output layer with 1 neuron (fixed)
                     var outputField = document.createElement('div');
                     outputField.classList.add('form-group', 'neuron-input');
                     outputField.innerHTML = '<label for="neuronsForLayer' + numberOfLayers + '">Neurons for Layer ' + numberOfLayers + ' (Output):</label>' +

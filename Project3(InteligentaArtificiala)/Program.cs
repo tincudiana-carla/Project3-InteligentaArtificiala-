@@ -9,6 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<CalculatingMINorMaxForEachColumn>();
 builder.Services.AddScoped<NormalizeData>();
 builder.Services.AddScoped<SplittingTheTableInTwoParts>();
+builder.Services.AddScoped<SettingXByCalculatingGINAndActivation>();
 
 builder.Services.AddDbContext<GlassContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

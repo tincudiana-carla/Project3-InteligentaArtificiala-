@@ -1,9 +1,12 @@
-﻿@model List<Project3_InteligentaArtificiala_.Models.NormalizedDataGlassModel>
-
+﻿@model Project3_InteligentaArtificiala_.Helper.ModelHelper
+<form asp-controller="NormalizedTable" asp-action="ChoosingTestingTable" method="post">
+    <button type="submit">Testing</button>
+</form>
 <div style="height: 400px; overflow-y: scroll;">
     <table class="table">
         <thead>
             <tr>
+                <th>INDEX</th>
                 <th>RI</th>
                 <th>Na</th>
                 <th>Mg</th>
@@ -17,20 +20,24 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var glass in Model)
+          
+            @foreach (var glass in Model.NormalizedGlassList)
             {
-                <tr>
-                    <td>@glass.RI</td>
-                    <td>@glass.Na</td>
-                    <td>@glass.Mg</td>
-                    <td>@glass.Al</td>
-                    <td>@glass.Si</td>
-                    <td>@glass.K</td>
-                    <td>@glass.Ca</td>
-                    <td>@glass.Ba</td>
-                    <td>@glass.Fe</td>
-                    <td>@glass.Type</td>
-                </tr>
+                var isInTestingTable = Model.TestingData.Any(t => t.Id == glass.Id);
+
+                    <tr style="@(isInTestingTable ? "color: red;" : "")">
+                        <td>@glass.Id</td>
+                        <td>@glass.RI</td>
+                        <td>@glass.Na</td>
+                        <td>@glass.Mg</td>
+                        <td>@glass.Al</td>
+                        <td>@glass.Si</td>
+                        <td>@glass.K</td>
+                        <td>@glass.Ca</td>
+                        <td>@glass.Ba</td>
+                        <td>@glass.Fe</td>
+                        <td>@glass.Type</td>
+                    </tr>
             }
         </tbody>
     </table>

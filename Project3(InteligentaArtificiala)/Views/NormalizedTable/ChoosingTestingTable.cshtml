@@ -1,0 +1,114 @@
+﻿@model Project3_InteligentaArtificiala_.Helper.ModelHelper
+
+<div style="height: 400px; overflow-y: scroll;">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>INDEX</th>
+                <th>RI</th>
+                <th>Na</th>
+                <th>Mg</th>
+                <th>Al</th>
+                <th>Si</th>
+                <th>K</th>
+                <th>Ca</th>
+                <th>Ba</th>
+                <th>Fe</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var glass in Model.NormalizedGlassList)
+            {
+                var isInTestingTable = Model.TestingData.Any(t => t.Id == glass.Id);
+
+                <tr style="@(isInTestingTable ? "color: red;" : "")">
+                    <td>@glass.Id</td>
+                    <td>@glass.RI</td>
+                    <td>@glass.Na</td>
+                    <td>@glass.Mg</td>
+                    <td>@glass.Al</td>
+                    <td>@glass.Si</td>
+                    <td>@glass.K</td>
+                    <td>@glass.Ca</td>
+                    <td>@glass.Ba</td>
+                    <td>@glass.Fe</td>
+                    <td>@glass.Type</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+</div>
+
+
+<h2>Configure Neural Network</h2>
+
+<form asp-controller="NormalizedTable" asp-action="ConfigureNeuralNetwork" method="post">
+    <div class="form-group">
+        <label for="numberOfLayers">Number of Layers:</label>
+        <input type="number" class="form-control" id="numberOfLayers" name="numberOfLayers" required />
+    </div>
+
+    <div id="neuronsInputContainer">
+    </div>
+
+    <button type="button" class="btn btn-primary" id="addLayerButton">Add Layer</button>
+    <button type="submit" class="btn btn-success">Configure Network</button>
+</form>
+
+@section scripts {
+    <style>
+        .neuron-input {
+            margin-left: 20px;
+        }
+    </style>
+
+    <script>
+        var layersAdded = false;
+
+        document.getElementById('addLayerButton').addEventListener('click', function () {
+            if (!layersAdded) {
+                var numberOfLayers = parseInt(document.getElementById('numberOfLayers').value);
+                if (!isNaN(numberOfLayers) && numberOfLayers >= 2) {
+                    // Clear previous layers
+                    document.getElementById('neuronsInputContainer').innerHTML = '';
+
+                    // Input layer with 9 neurons (fixed)
+                    var inputField = document.createElement('div');
+                    inputField.classList.add('form-group', 'neuron-input');
+                    inputField.innerHTML = '<label for="neuronsForLayer0">Neurons for Layer 0 (Input):</label>' +
+                        '<input type="number" class="form-control" id="neuronsForLayer0" name="neuronsPerLayer[0]" value="9" readonly />';
+                    document.getElementById('neuronsInputContainer').appendChild(inputField);
+
+                    // Hidden layers with customizable number of neurons
+                    for (var i = 1; i < numberOfLayers-1; i++) {
+                        var layerNumber = i === numberOfLayers - 1 ? 'Output' : 'Hidden Layer ' + i;
+                        var inputField = document.createElement('div');
+                        inputField.classList.add('form-group', 'neuron-input');
+                        inputField.innerHTML = '<label for="neuronsForLayer' + i + '">Neurons for ' + layerNumber + ':</label>' +
+                            '<input type="number" class="form-control" id="neuronsForLayer' + i + '" name="neuronsPerLayer[' + i + ']" required min="1" />';
+                        document.getElementById('neuronsInputContainer').appendChild(inputField);
+                    }
+
+                    // Output layer with 1 neuron (fixed)
+                    var outputField = document.createElement('div');
+                    outputField.classList.add('form-group', 'neuron-input');
+                    outputField.innerHTML = '<label for="neuronsForLayer' + numberOfLayers + '">Neurons for Layer ' + numberOfLayers + ' (Output):</label>' +
+                        '<input type="number" class="form-control" id="neuronsForLayer' + numberOfLayers + '" name="neuronsPerLayer[' + (numberOfLayers - 1) + ']" value="1" readonly />';
+                    document.getElementById('neuronsInputContainer').appendChild(outputField);
+
+                    layersAdded = true;
+                    document.getElementById('addLayerButton').disabled = true;
+                } else {
+                    alert("Number of layers must be greater than or equal to 2.");
+                }
+            }
+        });
+    </script>
+
+
+
+
+}

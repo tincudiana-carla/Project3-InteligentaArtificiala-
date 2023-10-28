@@ -17,27 +17,7 @@ namespace Project3_InteligentaArtificiala_.Helper
             _random = new Random();
             _glassContext = glassContext;
         }
-        private int GenerateRandomIndex(double type)
-        { 
-            int intType = (int)type;
-            switch (intType)
-            {
-                case 1:
-                    return _random.Next(1, 70);
-                case 2:
-                    return _random.Next(71, 146);
-                case 3:
-                    return _random.Next(147, 163);
-                case 5:
-                    return _random.Next(164, 176);
-                case 6:
-                    return _random.Next(177, 185);
-                case 7:
-                    return _random.Next(186, 214);
-                default:
-                    return 0; 
-            }
-        }
+
         public void SplitTheTable()
         {
             _testingContext.TestingTable.RemoveRange(_testingContext.TestingTable);

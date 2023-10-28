@@ -1,0 +1,48 @@
+﻿@model Project3_InteligentaArtificiala_.Models.NeuralNetworkModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@inject IJsonHelper Json
+
+<style>
+    .layer-header {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .neuron-button {
+        margin-right: 10px;
+    }
+</style>
+
+<h2>Neural Network Layers and Neurons</h2>
+
+<ul>
+    @foreach (var layer in Model.Layers)
+    {
+        <li>
+            <span class="layer-header">Layer @Model.Layers.IndexOf(layer)</span>
+            <ul>
+                @foreach (var neuron in layer.Neurons)
+                {
+                     <li style="display: inline;">
+                        <button type="button" class="btn btn-primary neuron-button"
+                            onclick="showNeuronDetails('@neuron.x', @Json.Serialize(neuron.weights))">
+                                Neuron @layer.Neurons.IndexOf(neuron)
+                        </button>
+                    </li>
+                }
+            </ul>
+        </li>
+    }
+</ul>
+
+<script>
+    function showNeuronDetails(inputValue, weights) {
+    var parsedWeights = weights.map(function(weight) {
+        return parseFloat(weight.replace(',', '.')); // Ensure decimal separator consistency
+    });
+
+    var weightsString = parsedWeights.join(', ');
+    alert('Input (x): ' + inputValue + '\nWeights (w): ' + weightsString);
+}
+
+</script>

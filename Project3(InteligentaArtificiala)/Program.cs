@@ -10,6 +10,12 @@ builder.Services.AddScoped<CalculatingMINorMaxForEachColumn>();
 builder.Services.AddScoped<NormalizeData>();
 builder.Services.AddScoped<SplittingTheTableInTwoParts>();
 builder.Services.AddScoped<SettingXByCalculatingGINAndActivation>();
+builder.Services.AddScoped<NeuralNetworkErrorManager>();
+builder.Services.AddScoped<NeuralNetworkModel>(serviceProvider =>
+{
+    var numberOfNeuronsInLayers = new List<int> {};
+    return new NeuralNetworkModel(numberOfNeuronsInLayers);
+});
 
 builder.Services.AddDbContext<GlassContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

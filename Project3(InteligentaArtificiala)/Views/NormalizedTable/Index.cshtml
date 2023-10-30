@@ -1,6 +1,6 @@
 ﻿@model Project3_InteligentaArtificiala_.Helper.ModelHelper
 <form asp-controller="NormalizedTable" asp-action="ChoosingTestingTable" method="post">
-    <button type="submit">Testing</button>
+    <button type="submit">Split the Table</button>
 </form>
 <div style="height: 400px; overflow-y: scroll;">
     <table class="table">
@@ -25,7 +25,7 @@
             {
                 var isInTestingTable = Model.TestingData.Any(t => t.Id == glass.Id);
 
-                    <tr style="@(isInTestingTable ? "color: red;" : "")">
+                    <tr>
                         <td>@glass.Id</td>
                         <td>@glass.RI</td>
                         <td>@glass.Na</td>

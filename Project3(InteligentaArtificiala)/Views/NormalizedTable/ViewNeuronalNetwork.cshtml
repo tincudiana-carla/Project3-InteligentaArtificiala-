@@ -13,12 +13,43 @@
     }
 </style>
 
-<h2>Neural Network Layers and Neurons</h2>
+<h2>NEURONAL NETWORK</h2>
 
 <ul>
     @foreach (var layer in Model.Layers)
     {
         <li>
+            @if (Model.Layers.IndexOf(layer) == 0 )
+            {
+                 <span class="layer-header">Input Layer</span>
+                 <ul>
+                @foreach (var neuron in layer.Neurons)
+                {
+                     <li style="display: inline;">
+                        <button type="button" class="btn btn-primary neuron-button"
+                            onclick="showNeuronDetails('@neuron.x', @Json.Serialize(neuron.weights))">
+                                Neuron @layer.Neurons.IndexOf(neuron)
+                        </button>
+                    </li>
+                }
+                </ul>
+            }
+            else if (Model.Layers.IndexOf(layer) == Model.Layers.Count-1)
+            {
+                <span class="layer-header">Output Layer</span>
+                <ul>
+                    @foreach (var neuron in layer.Neurons)
+                    {
+                        <li style="display: inline;">
+                            <button type="button" class="btn btn-primary neuron-button"
+                        onclick="showNeuronDetails('@neuron.x', @Json.Serialize(neuron.weights))">
+                                Neuron @layer.Neurons.IndexOf(neuron)
+                            </button>
+                        </li>
+                    }
+                </ul>
+            }
+            else{
             <span class="layer-header">Layer @Model.Layers.IndexOf(layer)</span>
             <ul>
                 @foreach (var neuron in layer.Neurons)
@@ -30,10 +61,19 @@
                         </button>
                     </li>
                 }
+
             </ul>
+            }
         </li>
     }
 </ul>
+
+
+<button type="button" class="btn btn-primary" id="showErrorsButton">
+    Show Errors
+</button>
+
+<div id="errorsContainer"></div>
 
 <script>
     function showNeuronDetails(inputValue, weights) {
@@ -47,6 +87,18 @@
     var weightsString = parsedWeights.join(', ');
     alert('Input (x): ' + inputValue + '\nWeights (w): ' + weightsString);
 }
-
-
 </script>
+
+<script>
+    document.getElementById('showErrorsButton').addEventListener('click', function () {
+        var errorsList = @Html.Raw(Json.Serialize(Model.Errors));
+        var errorsHtml = '<ul>';
+        for (var i = 0; i < errorsList.length; i++) {
+            errorsHtml += '<li>' + (i + 1) + '. Error: ' + errorsList[i] + '</li>';
+        }
+        errorsHtml += '</ul>';
+        document.getElementById('errorsContainer').innerHTML = errorsHtml;
+    });
+</script>
+
+

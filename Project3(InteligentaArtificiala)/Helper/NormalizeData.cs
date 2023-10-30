@@ -21,7 +21,6 @@ namespace Project3_InteligentaArtificiala_.Helper
             _testingContext = testingContext;
             _splittingTheTableInTwoParts = splittingTheTableInTwoParts;
         }
-
         public void NormalizingData()
         {
 
@@ -83,51 +82,79 @@ namespace Project3_InteligentaArtificiala_.Helper
 
             float c = 0;
             float d = 1;
-            
 
-            foreach(var glass in existingList)
+
+            foreach (var glass in existingList)
             {
-                glass.RI = ((c - d) / (leftComponentRI - rightComponentRI)) * glass.RI + (leftComponentRI * d - rightComponentRI * c) / (leftComponentRI - rightComponentRI);
-                glass.Na = ((c - d) / (leftComponentNa - rightComponentNa)) * glass.Na + (leftComponentNa * d - rightComponentNa * c) / (leftComponentNa - rightComponentNa);
-                glass.Mg = ((c - d) / (leftComponentMg - rightComponentMg)) * glass.Mg + (leftComponentMg * d - rightComponentMg * c) / (leftComponentMg - rightComponentMg);
-                glass.Al = ((c - d) / (leftComponentAl - rightComponentAl)) * glass.Al + (leftComponentAl * d - rightComponentAl * c) / (leftComponentAl - rightComponentAl);
-                glass.Si = ((c - d) / (leftComponentSi - rightComponentSi)) * glass.Si + (leftComponentSi * d - rightComponentSi * c) / (leftComponentSi - rightComponentSi);
-                glass.K = ((c - d) / (leftComponentK - rightComponentK)) * glass.K + (leftComponentK * d - rightComponentK * c) / (leftComponentK - rightComponentK);
-                glass.Ca = ((c - d) / (leftComponentCa - rightComponentCa)) * glass.Ca + (leftComponentCa * d - rightComponentCa * c) / (leftComponentCa - rightComponentCa);
-                glass.Ba = ((c - d) / (leftComponentBa - rightComponentBa)) * glass.Ba + (leftComponentBa * d - rightComponentBa * c) / (leftComponentBa - rightComponentBa);
-                glass.Fe = ((c - d) / (leftComponentFe - rightComponentFe)) * glass.Fe + (leftComponentFe * d - rightComponentFe * c) / (leftComponentFe - rightComponentFe);
-                glass.Type = (((c - d) / (leftComponentType - rightComponentType)) * glass.Type) + ((leftComponentType * d - rightComponentType * c) / (leftComponentType - rightComponentType));    
+                glass.RI = Math.Round((((c - d) / (leftComponentRI - rightComponentRI)) * glass.RI) + (leftComponentRI * d - rightComponentRI * c) / (leftComponentRI - rightComponentRI), 6);
+
+                glass.Na = Math.Round((((c - d) / (leftComponentNa - rightComponentNa)) * glass.Na) + (leftComponentNa * d - rightComponentNa * c) / (leftComponentNa - rightComponentNa), 6);
+
+                glass.Mg = Math.Round((((c - d) / (leftComponentMg - rightComponentMg)) * glass.Mg) + (leftComponentMg * d - rightComponentMg * c) / (leftComponentMg - rightComponentMg), 6);
+
+                glass.Al = Math.Round((((c - d) / (leftComponentAl - rightComponentAl)) * glass.Al) + (leftComponentAl * d - rightComponentAl * c) / (leftComponentAl - rightComponentAl), 6);
+
+                glass.Si = Math.Round((((c - d) / (leftComponentSi - rightComponentSi)) * glass.Si) + (leftComponentSi * d - rightComponentSi * c) / (leftComponentSi - rightComponentSi), 6);
+
+                glass.K = Math.Round((((c - d) / (leftComponentK - rightComponentK)) * glass.K) + (leftComponentK * d - rightComponentK * c) / (leftComponentK - rightComponentK), 6);
+
+                glass.Ca = Math.Round((((c - d) / (leftComponentCa - rightComponentCa)) * glass.Ca) + (leftComponentCa * d - rightComponentCa * c) / (leftComponentCa - rightComponentCa), 6);
+
+                glass.Ba = Math.Round((((c - d) / (leftComponentBa - rightComponentBa)) * glass.Ba) + (leftComponentBa * d - rightComponentBa * c) / (leftComponentBa - rightComponentBa), 6);
+
+                glass.Fe = Math.Round((((c - d) / (leftComponentFe - rightComponentFe)) * glass.Fe) + (leftComponentFe * d - rightComponentFe * c) / (leftComponentFe - rightComponentFe), 6);
+
+                glass.Type = Math.Round((((c - d) / (-6)) * glass.Type) + ((1 * d - 7 * c) / (-6)), 6);
             }
+
             _normalizedTable.SaveChanges();
 
             foreach (var glassTesting in _testingContext.TestingTable)
             {
-                glassTesting.RI = ((c - d) / (leftComponentRI - rightComponentRI)) * glassTesting.RI + (leftComponentRI * d - rightComponentRI * c) / (leftComponentRI - rightComponentRI);
-                glassTesting.Na = ((c - d) / (leftComponentNa - rightComponentNa)) * glassTesting.Na + (leftComponentNa * d - rightComponentNa * c) / (leftComponentNa - rightComponentNa);
-                glassTesting.Mg = ((c - d) / (leftComponentMg - rightComponentMg)) * glassTesting.Mg + (leftComponentMg * d - rightComponentMg * c) / (leftComponentMg - rightComponentMg);
-                glassTesting.Al = ((c - d) / (leftComponentAl - rightComponentAl)) * glassTesting.Al + (leftComponentAl * d - rightComponentAl * c) / (leftComponentAl - rightComponentAl);
-                glassTesting.Si = ((c - d) / (leftComponentSi - rightComponentSi)) * glassTesting.Si + (leftComponentSi * d - rightComponentSi * c) / (leftComponentSi - rightComponentSi);
-                glassTesting.K = ((c - d) / (leftComponentK - rightComponentK)) * glassTesting.K + (leftComponentK * d - rightComponentK * c) / (leftComponentK - rightComponentK);
-                glassTesting.Ca = ((c - d) / (leftComponentCa - rightComponentCa)) * glassTesting.Ca + (leftComponentCa * d - rightComponentCa * c) / (leftComponentCa - rightComponentCa);
-                glassTesting.Ba = ((c - d) / (leftComponentBa - rightComponentBa)) * glassTesting.Ba + (leftComponentBa * d - rightComponentBa * c) / (leftComponentBa - rightComponentBa);
-                glassTesting.Fe = ((c - d) / (leftComponentFe - rightComponentFe)) * glassTesting.Fe + (leftComponentFe * d - rightComponentFe * c) / (leftComponentFe - rightComponentFe);
-                glassTesting.Type = (((c - d) / (leftComponentType - rightComponentType)) * glassTesting.Type) + ((leftComponentType * d - rightComponentType * c) / (leftComponentType - rightComponentType));
+                glassTesting.RI = Math.Round((((c - d) / (leftComponentRI - rightComponentRI)) * glassTesting.RI) + (leftComponentRI * d - rightComponentRI * c) / (leftComponentRI - rightComponentRI), 6);
+
+                glassTesting.Na = Math.Round((((c - d) / (leftComponentNa - rightComponentNa)) * glassTesting.Na) + (leftComponentNa * d - rightComponentNa * c) / (leftComponentNa - rightComponentNa), 6);
+
+                glassTesting.Mg = Math.Round((((c - d) / (leftComponentMg - rightComponentMg)) * glassTesting.Mg) + (leftComponentMg * d - rightComponentMg * c) / (leftComponentMg - rightComponentMg), 6);
+
+                glassTesting.Al = Math.Round((((c - d) / (leftComponentAl - rightComponentAl)) * glassTesting.Al) + (leftComponentAl * d - rightComponentAl * c) / (leftComponentAl - rightComponentAl), 6);
+
+                glassTesting.Si = Math.Round((((c - d) / (leftComponentSi - rightComponentSi)) * glassTesting.Si) + (leftComponentSi * d - rightComponentSi * c) / (leftComponentSi - rightComponentSi), 6);
+
+                glassTesting.K = Math.Round((((c - d) / (leftComponentK - rightComponentK)) * glassTesting.K) + (leftComponentK * d - rightComponentK * c) / (leftComponentK - rightComponentK), 6);
+
+                glassTesting.Ca = Math.Round((((c - d) / (leftComponentCa - rightComponentCa)) * glassTesting.Ca) + (leftComponentCa * d - rightComponentCa * c) / (leftComponentCa - rightComponentCa), 6);
+
+                glassTesting.Ba = Math.Round((((c - d) / (leftComponentBa - rightComponentBa)) * glassTesting.Ba) + (leftComponentBa * d - rightComponentBa * c) / (leftComponentBa - rightComponentBa), 6);
+
+                glassTesting.Fe = Math.Round((((c - d) / (leftComponentFe - rightComponentFe)) * glassTesting.Fe) + (leftComponentFe * d - rightComponentFe * c) / (leftComponentFe - rightComponentFe), 6);
+
+                glassTesting.Type = Math.Round((((c - d) / (-6)) * glassTesting.Type) + ((1 * d - 7 * c) / (-6)), 6);
 
 
             }
             _testingContext.SaveChanges();
             foreach (var glassTTraining in _trainingContext.TrainingTable2)
             {
-                glassTTraining.RI = ((c - d) / (leftComponentRI - rightComponentRI)) * glassTTraining.RI + (leftComponentRI * d - rightComponentRI * c) / (leftComponentRI - rightComponentRI);
-                glassTTraining.Na = ((c - d) / (leftComponentNa - rightComponentNa)) * glassTTraining.Na + (leftComponentNa * d - rightComponentNa * c) / (leftComponentNa - rightComponentNa);
-                glassTTraining.Mg = ((c - d) / (leftComponentMg - rightComponentMg)) * glassTTraining.Mg + (leftComponentMg * d - rightComponentMg * c) / (leftComponentMg - rightComponentMg);
-                glassTTraining.Al = ((c - d) / (leftComponentAl - rightComponentAl)) * glassTTraining.Al + (leftComponentAl * d - rightComponentAl * c) / (leftComponentAl - rightComponentAl);
-                glassTTraining.Si = ((c - d) / (leftComponentSi - rightComponentSi)) * glassTTraining.Si + (leftComponentSi * d - rightComponentSi * c) / (leftComponentSi - rightComponentSi);
-                glassTTraining.K = ((c - d) / (leftComponentK - rightComponentK)) * glassTTraining.K + (leftComponentK * d - rightComponentK * c) / (leftComponentK - rightComponentK);
-                glassTTraining.Ca = ((c - d) / (leftComponentCa - rightComponentCa)) * glassTTraining.Ca + (leftComponentCa * d - rightComponentCa * c) / (leftComponentCa - rightComponentCa);
-                glassTTraining.Ba = ((c - d) / (leftComponentBa - rightComponentBa)) * glassTTraining.Ba + (leftComponentBa * d - rightComponentBa * c) / (leftComponentBa - rightComponentBa);
-                glassTTraining.Fe = ((c - d) / (leftComponentFe - rightComponentFe)) * glassTTraining.Fe + (leftComponentFe * d - rightComponentFe * c) / (leftComponentFe - rightComponentFe);
-                glassTTraining.Type = (((c - d) / (leftComponentType - rightComponentType)) * glassTTraining.Type) + ((leftComponentType * d - rightComponentType * c) / (leftComponentType - rightComponentType));
+                glassTTraining.RI = Math.Round((((c - d) / (leftComponentRI - rightComponentRI)) * glassTTraining.RI) + (leftComponentRI * d - rightComponentRI * c) / (leftComponentRI - rightComponentRI), 6);
+
+                glassTTraining.Na = Math.Round((((c - d) / (leftComponentNa - rightComponentNa)) * glassTTraining.Na) + (leftComponentNa * d - rightComponentNa * c) / (leftComponentNa - rightComponentNa), 6);
+
+                glassTTraining.Mg = Math.Round((((c - d) / (leftComponentMg - rightComponentMg)) * glassTTraining.Mg) + (leftComponentMg * d - rightComponentMg * c) / (leftComponentMg - rightComponentMg), 6);
+
+                glassTTraining.Al = Math.Round((((c - d) / (leftComponentAl - rightComponentAl)) * glassTTraining.Al) + (leftComponentAl * d - rightComponentAl * c) / (leftComponentAl - rightComponentAl), 6);
+
+                glassTTraining.Si = Math.Round((((c - d) / (leftComponentSi - rightComponentSi)) * glassTTraining.Si) + (leftComponentSi * d - rightComponentSi * c) / (leftComponentSi - rightComponentSi), 6);
+
+                glassTTraining.K = Math.Round((((c - d) / (leftComponentK - rightComponentK)) * glassTTraining.K) + (leftComponentK * d - rightComponentK * c) / (leftComponentK - rightComponentK), 6);
+
+                glassTTraining.Ca = Math.Round((((c - d) / (leftComponentCa - rightComponentCa)) * glassTTraining.Ca) + (leftComponentCa * d - rightComponentCa * c) / (leftComponentCa - rightComponentCa), 6);
+
+                glassTTraining.Ba = Math.Round((((c - d) / (leftComponentBa - rightComponentBa)) * glassTTraining.Ba) + (leftComponentBa * d - rightComponentBa * c) / (leftComponentBa - rightComponentBa), 6);
+
+                glassTTraining.Fe = Math.Round((((c - d) / (leftComponentFe - rightComponentFe)) * glassTTraining.Fe) + (leftComponentFe * d - rightComponentFe * c) / (leftComponentFe - rightComponentFe), 6);
+
+                glassTTraining.Type = Math.Round((((c - d) / (-6)) * glassTTraining.Type) + ((1 * d - 7 * c) / (-6)), 6);
 
             }
             _trainingContext.SaveChanges();

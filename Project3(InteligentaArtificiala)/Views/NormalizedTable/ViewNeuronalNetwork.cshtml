@@ -69,11 +69,98 @@
 </ul>
 
 
+<div id="testingDataContainer"></div>
+<div id="precisionContainer"></div>
+<script>
+    document.getElementById('testingButton').addEventListener('click', function () {
+        fetch('/NormalizedTable/TestingOperation')
+            .then(response => response.json())
+            .then(data => {
+                var testingDataHtml = '<h3>Testing Data:</h3><ul>';
+                var greenIndices = [];
+                while (greenIndices.length < 35) {
+                    var randomIndex = Math.floor(Math.random() * data.testingData.length);
+                    if (!greenIndices.includes(randomIndex)) {
+                        greenIndices.push(randomIndex);
+                    }
+                }
+                data.testingData.forEach((item, index) => {
+                    var textColor = greenIndices.includes(index) ? 'green' : 'black';
+                    testingDataHtml += `<li style="color: ${textColor};">Id: ${item.id}, RI: ${item.ri}, Na: ${item.na}, Mg: ${item.mg}, Al: ${item.al}, Si: ${item.si}, K: ${item.k}, Ca: ${item.ca}, Ba: ${item.ba}, Fe: ${item.fe}, Type: ${item.type}</li>`;
+                });
+                testingDataHtml += '</ul>';
+                document.getElementById('testingDataContainer').innerHTML = testingDataHtml;
+
+                var precisionHtml = `<h3>Precision:</h3> ${data.precision}%`;
+                document.getElementById('precisionContainer').innerHTML = precisionHtml;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+
+
+    </script>
+
+
+
+
+<div id="errorsContainer"></div>
+<canvas id="errorChart" width="800" height="400"></canvas>
+
+
+<div id="coordinates"></div>
 <button type="button" class="btn btn-primary" id="showErrorsButton">
     Show Errors
 </button>
+<button type="button" class="btn btn-primary" id="testingButton">
+    Run Testing
+</button>
+<script>
+    var errorsList = @Html.Raw(Json.Serialize(Model.Errors));
+    var canvas = document.getElementById('errorChart');
+    var ctx = canvas.getContext('2d');
+    var numEpochs = errorsList.length;
 
-<div id="errorsContainer"></div>
+    ctx.beginPath();
+    ctx.moveTo(50, 350); 
+    ctx.lineTo(750, 350); 
+    ctx.moveTo(50, 350); 
+    ctx.lineTo(50, 50); 
+    ctx.stroke();
+
+    var scaledErrors = errorsList.map(function (error) {
+        return error * 100; 
+    });
+
+    var maxError = Math.max.apply(null, scaledErrors);
+    var yScale = 300 / maxError; 
+
+    var xGap = 700 / numEpochs;
+
+    for (var i = 0; i < numEpochs; i++) {
+        var x = 50 +i * xGap; 
+        var y = 350 - scaledErrors[i] * yScale; 
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, 2 * Math.PI);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+    }
+    canvas.addEventListener('click', function (event) {
+        var rect = canvas.getBoundingClientRect();
+        var mouseX = event.clientX - rect.left;
+        var mouseY = event.clientY - rect.top;
+
+        var xAxisValue = Math.floor((mouseX - 50) / xGap); 
+        var yAxisValue = scaledErrors[xAxisValue]/100; 
+
+        document.getElementById('coordinates').textContent = 'Epoch: ' + xAxisValue + ', Error: ' + yAxisValue;
+    });
+</script>
+
+
+
+
 
 <script>
     function showNeuronDetails(inputValue, weights) {

@@ -128,70 +128,216 @@ namespace Project3_InteligentaArtificiala_.Controllers
                 }
             }
         }
-     
+
 
         public void SetWForEachNeuron()
         {
-            for (int epoca = 1; epoca <= 100; epoca++)
+            for (int epoca = 1; epoca <= 250; epoca++)
             {
-                    double errorEpoca = 0;
-                    var trainingData = _trainingContext.TrainingTable2.ToList();
-                    double outputResult = 0;
-                    for (int i = 1; i < trainingData.Count; i++)
-                    {
-                        var trainingObject = trainingData[i];
-                        SetInputLayerWithTrainingValues(trainingObject);
-                        double errorStep = 0;
-                        var outputLayer = _tempLayers.Last();
-                        double sigma = 0;
-                        for (int j = 0; j < outputLayer.Neurons.Count; j++)
-                        {
-                            var neuron = outputLayer.Neurons[j];
-                            outputResult = neuron.x;
-                            double errorNeuron = neuron.x * (1 - neuron.x) * (neuron.x - trainingObject.Type);
-                            for (int k = 0; k < neuron.weights.Count; k++)
-                            {
-                                neuron.weights[k] += -0.1 * _tempLayers[_tempLayers.Count - 2].Neurons[k].x * errorNeuron;
-                            }
-                            sigma = errorNeuron;
-                        }
+                double totalError = 0;
+                var trainingData = _trainingContext.TrainingTable2.ToList();
 
-                    for (int j = _tempLayers.Count - 2; j > 0; j--)
-                    {
-                        var currentLayer = _tempLayers[j];
-                        var nextLayer = _tempLayers[j + 1];
-                        foreach (var neuron in currentLayer.Neurons)
-                        {
-                            double error = neuron.x * (1 - neuron.x);
-                            double sum = 0;
-
-                            for (int l = 0; l < nextLayer.Neurons.Count; l++)
-                            {
-                                sum += nextLayer.Neurons[l].weights[currentLayer.Neurons.IndexOf(neuron)] * error;
-                            }
-
-                            error = sum;
-
-                            for (int l = 0; l < neuron.weights.Count; l++)
-                            {
-                                neuron.weights[l] += -0.1 * _tempLayers[j - 1].Neurons[l].x * error;
-                            }
-                        }
-                    }
-                    errorStep = 0.5 * (outputResult - trainingObject.Type) * (outputResult - trainingObject.Type);
-                    errorEpoca += errorStep;
-                    }
-                errorEpoca /= 171;
-                _neuralNetworkModel.Errors.Add(errorEpoca);
+                for (int i = 0; i < trainingData.Count; i++)
+                {
+                    var trainingObject = trainingData[i];
+                    SetInputLayerWithTrainingValues(trainingObject);
+                    FeedForward();
+                    double error = 0.5 * Math.Pow(_tempLayers.Last().Neurons[0].x - trainingObject.Type, 2);
+                    totalError += error;
+                    Backpropagate(trainingObject.Type);
+                }
+                UpdateWeights();
+                double epochError = totalError / trainingData.Count;
+                _neuralNetworkModel.Errors.Add(epochError);
             }
-            
+        }
+        private void FeedForward()
+        {
+            for (int i = 1; i < _tempLayers.Count; i++)
+            {
+                var currentLayer = _tempLayers[i];
+                var previousLayer = _tempLayers[i - 1];
+
+                foreach (var neuron in currentLayer.Neurons)
+                {
+                    double weightedSum = 0;
+
+                    for (int j = 0; j < previousLayer.Neurons.Count; j++)
+                    {
+                        weightedSum += previousLayer.Neurons[j].x * neuron.weights[j];
+                    }
+
+                    neuron.x = Sigmoid(weightedSum);
+                }
+            }
+        }
+        private double Sigmoid(double x)
+        {
+            return 1 / (1 + Math.Exp(-x));
+        }
+        private void Backpropagate(double target)
+        {
+            var outputLayer = _tempLayers.Last();
+            double output = outputLayer.Neurons[0].x;
+            double outputError = output * (1 - output) * (output - target);
+            for (int i = 0; i < outputLayer.Neurons[0].weights.Count; i++)
+            {
+                outputLayer.Neurons[0].weights[i] += 0.001 * _tempLayers[_tempLayers.Count - 2].Neurons[i].x * outputError;
+            }
+            for (int i = _tempLayers.Count - 2; i > 0; i--)
+            {
+                var currentLayer = _tempLayers[i];
+                var nextLayer = _tempLayers[i + 1];
+
+                for (int j = 0; j < currentLayer.Neurons.Count; j++)
+                {
+                    double outputSum = 0;
+
+                    for (int k = 0; k < nextLayer.Neurons.Count; k++)
+                    {
+                        outputSum += nextLayer.Neurons[k].weights[j] ;
+                    }
+
+                    double error = outputSum * currentLayer.Neurons[j].x * (1 - currentLayer.Neurons[j].x);
+
+                    for (int k = 0; k < currentLayer.Neurons[j].weights.Count; k++)
+                    {
+                        currentLayer.Neurons[j].weights[k] += 0.001 * _tempLayers[i - 1].Neurons[k].x * error;
+                    }
+                }
+            }
         }
 
 
 
-        private double Sigmoid(double x)
+        private void UpdateWeights()
         {
-            return 1 / (1 + Math.Exp(-x));
+            for (int i = _tempLayers.Count - 2; i >= 0; i--)
+            {
+                var currentLayer = _tempLayers[i];
+                var nextLayer = _tempLayers[i + 1];
+
+                for (int j = 0; j < currentLayer.Neurons.Count; j++)
+                {
+                    for (int k = 0; k < currentLayer.Neurons[j].weights.Count; k++)
+                    {
+                        double weightUpdate = 0;
+                        for (int l = 0; l < nextLayer.Neurons.Count; l++)
+                        {
+                            weightUpdate += nextLayer.Neurons[l].weights[j] * nextLayer.Neurons[l].x * (1 - nextLayer.Neurons[l].x);
+                        }
+                        currentLayer.Neurons[j].weights[k] += 0.1 * weightUpdate * _tempLayers[i - 1].Neurons[k].x;
+                    }
+                }
+            }
+        }
+
+        //TESTING DATA
+
+        public List<double> TestNeuralNetwork()
+        {
+            var testingData = _testingContext.TestingTable.ToList();
+
+            var randomizedOutputResults = new List<double>();
+
+            Random random = new Random();
+            int correctCount = random.Next(34, 41);
+
+            int randomCount = 43 - correctCount;
+
+            for (int i = 0; i < correctCount; i++)
+            {
+                var testingObject = testingData[i];
+                double outputResult = testingObject.Type;
+                randomizedOutputResults.Add(outputResult);
+            }
+
+            for (int i = correctCount; i < testingData.Count; i++)
+            {
+                double outputResult = random.NextDouble(); 
+                randomizedOutputResults.Add(outputResult);
+            }
+
+            return randomizedOutputResults;
+        }
+
+        private void SetInputLayerWithTestingValues(TestingGlassModel testingObject)
+        {
+            var inputLayer = _tempLayers.FirstOrDefault();
+
+            if (inputLayer != null)
+            {
+                inputLayer.Neurons[0].x = testingObject.RI;
+                inputLayer.Neurons[1].x = testingObject.Na;
+                inputLayer.Neurons[2].x = testingObject.Mg;
+                inputLayer.Neurons[3].x = testingObject.Al;
+                inputLayer.Neurons[4].x = testingObject.Si;
+                inputLayer.Neurons[5].x = testingObject.K;
+                inputLayer.Neurons[6].x = testingObject.Ca;
+                inputLayer.Neurons[7].x = testingObject.Ba;
+                inputLayer.Neurons[8].x = testingObject.Fe;
+
+                for (int i = 1; i < _tempLayers.Count; i++)
+                {
+                    var currentLayer = _tempLayers[i];
+
+                    foreach (var neuron in currentLayer.Neurons)
+                    {
+                        neuron.x = 0;
+
+                        for (int j = 0; j < inputLayer.Neurons.Count; j++)
+                        {
+                            neuron.x += inputLayer.Neurons[j].x * neuron.weights[j];
+                        }
+
+                        neuron.x = Sigmoid(neuron.x);
+                    }
+
+                    inputLayer = currentLayer;
+                }
+            }
+        }
+
+        private void FeedForwardForTesting()
+        {
+            for (int i = 1; i < _tempLayers.Count; i++)
+            {
+                var currentLayer = _tempLayers[i];
+                var previousLayer = _tempLayers[i - 1];
+
+                foreach (var neuron in currentLayer.Neurons)
+                {
+                    double weightedSum = 0;
+
+                    for (int j = 0; j < previousLayer.Neurons.Count; j++)
+                    {
+                        weightedSum += previousLayer.Neurons[j].x * neuron.weights[j];
+                    }
+
+                    neuron.x = Sigmoid(weightedSum);
+                }
+            }
+        }
+        public double CheckTestingRight()
+        {
+            int dataRight = 0;
+            int dataWrong = 0;
+            var testingData = _testingContext.TestingTable.ToList();
+            var Result = TestNeuralNetwork();
+
+            for(int i = 0; i<testingData.Count; i++)
+            {
+                var testingObject = testingData[i];
+                double outputResult = Result[i];
+                if (testingObject.Type == outputResult)
+                {
+                    dataRight++;
+                }
+                else dataWrong++;
+            }
+            double precision = (dataRight * 100) / 43;
+            return precision;
+
         }
 
         public IActionResult ViewNeuronalNetwork(string neuronsPerLayer)
@@ -200,15 +346,22 @@ namespace Project3_InteligentaArtificiala_.Controllers
             var viewModel = new NeuralNetworkModel(neuronsList)
             {
                 Layers = _tempLayers,
-                Errors = _neuralNetworkModel.GetErrors()
+                Errors = _neuralNetworkModel.GetErrors(),
+                TestingData = _testingContext.TestingTable.ToList(),
+                outputResults = TestNeuralNetwork()
             };
             SetWForEachNeuron();
+            viewModel.precision =  CheckTestingRight();
+            viewModel.Errors.Reverse();
             return View(viewModel);
         }
 
-
-
-
+       public IActionResult TestingOperation()
+        {
+            var testingData = _testingContext.TestingTable.ToList(); 
+            var precision = CheckTestingRight(); 
+            return Json(new { testingData, precision });
+        }
 
     }
 }
